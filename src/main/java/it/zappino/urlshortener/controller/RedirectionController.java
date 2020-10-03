@@ -20,7 +20,7 @@ public class RedirectionController {
     @Autowired
     ShortUrlService shortUrlService;
 
-    @GetMapping(path = "/{code}")
+    @GetMapping(path = "/{code:[a-zA-Z0-9]{6}}")
     public @ResponseBody
     void redirect(@PathVariable String code, HttpServletResponse response) throws IOException {
         log.info("Processing redirect for code: " + code);
