@@ -10,8 +10,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.annotation.DirtiesContext.ClassMode.*;
 
 @SpringBootTest
@@ -46,6 +45,20 @@ class ShortShortUrlServiceTest {
         assertEquals(localhostUrl, allUrls.get(0));
         assertEquals(googleUrl, allUrls.get(1));
         assertEquals(amazonUrl, allUrls.get(2));
+    }
+
+    @Test
+    void getUrlByCode() {
+        assertFalse(shortUrlService.getUrlByCode("void").isPresent());
+
+        ShortUrl localhostUrl = shortUrlService.createShortUrl("http://localhost");
+
+        Optional<ShortUrl> maybeShortUrl = shortUrlService.getUrlByCode(localhostUrl.getCode());
+        if (maybeShortUrl.isPresent()) {
+            assertEquals(localhostUrl, maybeShortUrl.get());
+        } else {
+            fail();
+        }
     }
 
     @Test

@@ -7,6 +7,6 @@ public class CodeGenerator {
     public static final int length = 6;
 
     public static String create() {
-        return RandomStringUtils.randomAlphabetic(length);
+        return RandomStringUtils.randomAlphanumeric(length);
     }
 }

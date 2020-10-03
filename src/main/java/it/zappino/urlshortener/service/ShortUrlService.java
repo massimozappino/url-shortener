@@ -40,4 +40,8 @@ public class ShortUrlService {
     public String generateCode() {
         return CodeGenerator.create();
     }
+
+    public Optional<ShortUrl> getUrlByCode(String code) {
+        return shortUrlRepository.findByCode(code);
+    }
 }

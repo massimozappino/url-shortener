@@ -14,7 +14,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import static it.zappino.urlshortener.controller.ControllerHelper.*;
@@ -34,8 +33,6 @@ public class ShortUrlControllerTest {
     @SpyBean
     private ShortUrlService service;
 
-    ObjectMapper objectMapper = new ObjectMapper();
-
     @Test
     public void createNewShortUrl() throws Exception {
         doReturn("abcDEF").when(service).generateCode();
@@ -43,7 +40,7 @@ public class ShortUrlControllerTest {
         MvcResult mvcResult = doPost(mockMvc, "/api/url", "{\"long_url\":\"http://localhost/post\"}",
                 status().is(200)).andReturn();
 
-        ShortUrl shortUrl = objectMapper.readValue(getResponseBody(mvcResult), ShortUrl.class);
+        ShortUrl shortUrl = new ObjectMapper().readValue(getResponseBody(mvcResult), ShortUrl.class);
         assertNull(shortUrl.getId());
         assertEquals("http://localhost/post", shortUrl.getLongUrl());
         assertEquals("http://localhost:8080/abcDEF", shortUrl.getLink());
@@ -57,7 +54,7 @@ public class ShortUrlControllerTest {
         service.createShortUrl("https://amazon.com");
         service.createShortUrl("https://ebay.com");
 
-        MvcResult mvcResult = doGet(mockMvc, "/api/url", "", status().is(200)).andReturn();
+        MvcResult mvcResult = doGet(mockMvc, "/api/url", status().is(200)).andReturn();
 
         assertEquals("[{\"long_url\":\"https://google.com\",\"link\":\"http://localhost:8080/abcDEF\"}," +
                         "{\"long_url\":\"https://amazon.com\",\"link\":\"http://localhost:8080/abcDEF\"}," +
@@ -71,14 +68,9 @@ public class ShortUrlControllerTest {
         List<ShortUrl> allUrls = service.getAllUrls();
         assertEquals(1, allUrls.size());
 
-        doDelete(mockMvc, "/api/url", "{\"link\":\"" + shortUrl.getLink() + "\"}",
-                status().is(204));
-
+        MvcResult mvcResult = doDelete(mockMvc, "/api/url", "{\"link\":\"" + shortUrl.getLink() + "\"}",
+                status().is(204)).andReturn();
+        assertEquals("", getResponseBody(mvcResult));
         assertEquals(0, service.getAllUrls().size());
-    }
-
-
-    private String getResponseBody(MvcResult mvcResult) throws UnsupportedEncodingException {
-        return mvcResult.getResponse().getContentAsString();
     }
 }
