@@ -13,9 +13,12 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.util.Optional;
+
 import static it.zappino.urlshortener.controller.ControllerHelper.doGet;
 import static it.zappino.urlshortener.controller.ControllerHelper.getResponseBody;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(SpringExtension.class)
@@ -39,8 +42,16 @@ class RedirectionControllerTest {
     @Test
     public void processRedirectLinkToUrl() throws Exception {
         ShortUrl shortUrl = service.createShortUrl("http://google.com");
+        Optional<ShortUrl> maybeShortUrl = service.getUrlByCode(shortUrl.getCode());
+        assertTrue(maybeShortUrl.isPresent());
+        assertEquals(0, maybeShortUrl.get().hits);
+
         doGet(mockMvc, "/" + shortUrl.getCode(),
                 status().is(302))
                 .andExpect(redirectedUrl("http://google.com"));
+
+        Optional<ShortUrl> maybeShortUrlAfterRedirect = service.getUrlByCode(shortUrl.getCode());
+        assertTrue(maybeShortUrlAfterRedirect.isPresent());
+        assertEquals(1, maybeShortUrlAfterRedirect.get().hits);
     }
 }

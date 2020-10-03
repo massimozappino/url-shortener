@@ -31,17 +31,27 @@ public class ShortUrlService {
         return ImmutableList.copyOf(iterator);
     }
 
+    public Optional<ShortUrl> getUrlByCode(String code) {
+        return shortUrlRepository.findByCode(code);
+    }
+
     public void deleteShortUrl(String link) {
         log.info("Delete link: " + link);
         Optional<ShortUrl> maybeShortUrl = shortUrlRepository.findByLink(link);
         maybeShortUrl.ifPresent(shortUrl -> shortUrlRepository.deleteById(shortUrl.getId()));
     }
 
-    public String generateCode() {
-        return CodeGenerator.create();
+    public Optional<ShortUrl> processRedirect(String code) {
+        Optional<ShortUrl> maybeShortUrl = shortUrlRepository.findByCode(code);
+        if (maybeShortUrl.isPresent()) {
+            ShortUrl shortUrl = maybeShortUrl.get();
+            shortUrl.setHits(shortUrl.getHits() + 1);
+            return Optional.of(shortUrlRepository.save(shortUrl));
+        }
+        return maybeShortUrl;
     }
 
-    public Optional<ShortUrl> getUrlByCode(String code) {
-        return shortUrlRepository.findByCode(code);
+    public String generateCode() {
+        return CodeGenerator.create();
     }
 }

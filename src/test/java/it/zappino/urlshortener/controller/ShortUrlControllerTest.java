@@ -52,13 +52,12 @@ public class ShortUrlControllerTest {
 
         service.createShortUrl("https://google.com");
         service.createShortUrl("https://amazon.com");
-        service.createShortUrl("https://ebay.com");
 
         MvcResult mvcResult = doGet(mockMvc, "/api/url", status().is(200)).andReturn();
 
-        assertEquals("[{\"long_url\":\"https://google.com\",\"link\":\"http://localhost:8080/abcDEF\"}," +
-                        "{\"long_url\":\"https://amazon.com\",\"link\":\"http://localhost:8080/abcDEF\"}," +
-                        "{\"long_url\":\"https://ebay.com\",\"link\":\"http://localhost:8080/abcDEF\"}]",
+        assertEquals("[" +
+                        "{\"link\":\"http://localhost:8080/abcDEF\",\"hits\":0,\"long_url\":\"https://google.com\"}," +
+                        "{\"link\":\"http://localhost:8080/abcDEF\",\"hits\":0,\"long_url\":\"https://amazon.com\"}]",
                 getResponseBody(mvcResult));
     }
 

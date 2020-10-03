@@ -63,12 +63,29 @@ class ShortShortUrlServiceTest {
 
     @Test
     void deleteUrl() {
-        ShortUrl shortUrl = shortUrlService.createShortUrl("http://localhost");
+        ShortUrl shortUrl = shortUrlService.createShortUrl("http://google.com");
 
         assertEquals(1, shortUrlService.getAllUrls().size());
 
         shortUrlService.deleteShortUrl(shortUrl.getLink());
         assertEquals(0, shortUrlService.getAllUrls().size());
+    }
+
+    @Test
+    void processRedirect() {
+        ShortUrl shortUrl = shortUrlService.createShortUrl("http://google.com");
+        assertEquals(0, shortUrl.getHits());
+        shortUrlService.processRedirect(shortUrl.getCode());
+        Optional<ShortUrl> maybeShortUrl = shortUrlService.processRedirect(shortUrl.getCode());
+
+        assertTrue(maybeShortUrl.isPresent());
+        assertEquals(2, maybeShortUrl.get().getHits());
+    }
+
+    @Test
+    void processRedirectForNotExistUrl() {
+        Optional<ShortUrl> maybeShortUrl = shortUrlService.processRedirect("void");
+        assertFalse(maybeShortUrl.isPresent());
     }
 
     @Test

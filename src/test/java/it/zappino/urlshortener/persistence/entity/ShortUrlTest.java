@@ -12,7 +12,7 @@ class ShortUrlTest {
     void toJsonWithoutId() throws JsonProcessingException {
         ShortUrl shortUrl = aShortUrl();
 
-        assertEquals("{\"long_url\":\"http://localhost\",\"link\":\"http://localhost:8080/abcDEF\"}",
+        assertEquals("{\"link\":\"http://localhost:8080/abcDEF\",\"hits\":0,\"long_url\":\"http://localhost\"}",
                 (new ObjectMapper().writeValueAsString(shortUrl)));
     }
 

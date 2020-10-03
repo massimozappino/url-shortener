@@ -27,6 +27,7 @@ public class ShortUrl {
     @JsonProperty("long_url")
     private String longUrl;
 
-    @JsonProperty("link")
     public String link;
+
+    public int hits;
 }

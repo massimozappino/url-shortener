@@ -25,7 +25,7 @@ public class RedirectionController {
     void redirect(@PathVariable String code, HttpServletResponse response) throws IOException {
         log.info("Processing redirect for code: " + code);
 
-        Optional<ShortUrl> maybeShortUrl = shortUrlService.getUrlByCode(code);
+        Optional<ShortUrl> maybeShortUrl = shortUrlService.processRedirect(code);
         if (maybeShortUrl.isPresent()) {
             ShortUrl shortUrl = maybeShortUrl.get();
             response.sendRedirect(shortUrl.getLongUrl());
