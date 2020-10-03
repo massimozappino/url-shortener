@@ -3,12 +3,16 @@ package it.zappino.urlshortener.persistence.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import it.zappino.urlshortener.lib.ValidUrl;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 @Entity
 @Getter
@@ -24,6 +28,7 @@ public class ShortUrl {
     @JsonIgnore
     private String code;
 
+    @ValidUrl
     @JsonProperty("long_url")
     private String longUrl;
 

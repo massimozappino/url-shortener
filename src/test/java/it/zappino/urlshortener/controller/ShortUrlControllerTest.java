@@ -37,13 +37,21 @@ public class ShortUrlControllerTest {
     public void createNewShortUrl() throws Exception {
         doReturn("abcDEF").when(service).generateCode();
 
-        MvcResult mvcResult = doPost(mockMvc, "/api/url", "{\"long_url\":\"http://localhost/post\"}",
+        MvcResult mvcResult = doPost(mockMvc, "/api/url", "{\"long_url\":\"http://google.com\"}",
                 status().is(200)).andReturn();
 
         ShortUrl shortUrl = new ObjectMapper().readValue(getResponseBody(mvcResult), ShortUrl.class);
         assertNull(shortUrl.getId());
-        assertEquals("http://localhost/post", shortUrl.getLongUrl());
+        assertEquals("http://google.com", shortUrl.getLongUrl());
         assertEquals("http://localhost:8080/abcDEF", shortUrl.getLink());
+    }
+
+    @Test
+    public void createNewInvalidShortUrl() throws Exception {
+        MvcResult mvcResult = doPost(mockMvc, "/api/url", "{\"long_url\":\"http://localhost/post\"}",
+                status().is(400)).andReturn();
+
+        assertEquals("{\"longUrl\":\"Invalid url\"}", getResponseBody(mvcResult));
     }
 
     @Test

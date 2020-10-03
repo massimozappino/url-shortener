@@ -24,7 +24,7 @@ class ShortShortUrlServiceTest {
 
     @Test
     void createUrl() {
-        ShortUrl shortUrl = shortUrlService.createShortUrl("http://localhost");
+        ShortUrl shortUrl = shortUrlService.createShortUrl("http://google.com");
 
         Optional<ShortUrl> maybeUrl = shortUrlRepository.findByCode(shortUrl.getCode());
         assertTrue(maybeUrl.isPresent());
@@ -35,14 +35,14 @@ class ShortShortUrlServiceTest {
 
     @Test
     void getAllUrl() {
-        ShortUrl localhostUrl = shortUrlService.createShortUrl("http://localhost");
-        ShortUrl googleUrl = shortUrlService.createShortUrl("https://google");
-        ShortUrl amazonUrl = shortUrlService.createShortUrl("https://amazon");
+        ShortUrl wikipediatUrl = shortUrlService.createShortUrl("http://wikipedia.com");
+        ShortUrl googleUrl = shortUrlService.createShortUrl("https://google.com");
+        ShortUrl amazonUrl = shortUrlService.createShortUrl("https://amazon.com");
 
         List<ShortUrl> allUrls = shortUrlService.getAllUrls();
 
         assertEquals(3, allUrls.size());
-        assertEquals(localhostUrl, allUrls.get(0));
+        assertEquals(wikipediatUrl, allUrls.get(0));
         assertEquals(googleUrl, allUrls.get(1));
         assertEquals(amazonUrl, allUrls.get(2));
     }
@@ -51,7 +51,7 @@ class ShortShortUrlServiceTest {
     void getUrlByCode() {
         assertFalse(shortUrlService.getUrlByCode("void").isPresent());
 
-        ShortUrl localhostUrl = shortUrlService.createShortUrl("http://localhost");
+        ShortUrl localhostUrl = shortUrlService.createShortUrl("http://google.com");
 
         Optional<ShortUrl> maybeShortUrl = shortUrlService.getUrlByCode(localhostUrl.getCode());
         if (maybeShortUrl.isPresent()) {
