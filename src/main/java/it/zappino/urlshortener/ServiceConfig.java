@@ -1,5 +1,6 @@
 package it.zappino.urlshortener;
 
+import it.zappino.urlshortener.service.UrlService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
