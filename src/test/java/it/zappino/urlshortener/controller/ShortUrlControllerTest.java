@@ -4,46 +4,81 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import it.zappino.urlshortener.persistence.entity.ShortUrl;
 import it.zappino.urlshortener.service.ShortUrlService;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
-import static it.zappino.urlshortener.controller.ControllerHelper.doPost;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import java.io.UnsupportedEncodingException;
+import java.util.List;
+
+import static it.zappino.urlshortener.controller.ControllerHelper.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.doReturn;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(UrlController.class)
-//@ExtendWith(SpringExtension.class)
-//@SpringBootTest
-//@AutoConfigureMockMvc
+@ExtendWith(SpringExtension.class)
+@SpringBootTest
+@AutoConfigureMockMvc
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ShortUrlControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @SpyBean
     private ShortUrlService service;
+
+    ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
     public void createNewShortUrl() throws Exception {
-        ShortUrl expectedShortUrl = aUrl();
-        when(service.createUrl(any())).thenReturn(expectedShortUrl);
+        doReturn("abcDEF").when(service).generateCode();
 
-        ObjectMapper objectMapper  = new ObjectMapper();
-        String jsonContent = objectMapper.writeValueAsString(expectedShortUrl);
-        System.out.println(jsonContent);
-        doPost(mockMvc, "/api/url", "{\"url\":\"http://localhost/post\"}",
-                status().is(200))
-                .andExpect(content().json(jsonContent));
+        MvcResult mvcResult = doPost(mockMvc, "/api/url", "{\"long_url\":\"http://localhost/post\"}",
+                status().is(200)).andReturn();
+
+        ShortUrl shortUrl = objectMapper.readValue(getResponseBody(mvcResult), ShortUrl.class);
+        assertNull(shortUrl.getId());
+        assertEquals("http://localhost/post", shortUrl.getLongUrl());
+        assertEquals("http://localhost:8080/abcDEF", shortUrl.getLink());
+    }
+
+    @Test
+    public void getAllShortUrls() throws Exception {
+        doReturn("abcDEF").when(service).generateCode();
+
+        service.createShortUrl("https://google.com");
+        service.createShortUrl("https://amazon.com");
+        service.createShortUrl("https://ebay.com");
+
+        MvcResult mvcResult = doGet(mockMvc, "/api/url", "", status().is(200)).andReturn();
+
+        assertEquals("[{\"long_url\":\"https://google.com\",\"link\":\"http://localhost:8080/abcDEF\"}," +
+                        "{\"long_url\":\"https://amazon.com\",\"link\":\"http://localhost:8080/abcDEF\"}," +
+                        "{\"long_url\":\"https://ebay.com\",\"link\":\"http://localhost:8080/abcDEF\"}]",
+                getResponseBody(mvcResult));
+    }
+
+    @Test
+    public void deleteExistingUrl() throws Exception {
+        ShortUrl shortUrl = service.createShortUrl("https://google.com");
+        List<ShortUrl> allUrls = service.getAllUrls();
+        assertEquals(1, allUrls.size());
+
+        doDelete(mockMvc, "/api/url", "{\"link\":\"" + shortUrl.getLink() + "\"}",
+                status().is(204));
+
+        assertEquals(0, service.getAllUrls().size());
     }
 
 
-    private ShortUrl aUrl() {
-        ShortUrl shortUrl = new ShortUrl();
-        shortUrl.setLongUrl("http://localhost/post");
-        shortUrl.setCode("abcDEF");
-        return shortUrl;
+    private String getResponseBody(MvcResult mvcResult) throws UnsupportedEncodingException {
+        return mvcResult.getResponse().getContentAsString();
     }
 }

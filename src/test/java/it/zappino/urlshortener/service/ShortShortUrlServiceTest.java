@@ -5,13 +5,17 @@ import it.zappino.urlshortener.persistence.entity.ShortUrl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.annotation.DirtiesContext.ClassMode.*;
 
 @SpringBootTest
+@DirtiesContext(classMode = BEFORE_EACH_TEST_METHOD)
 class ShortShortUrlServiceTest {
     @Autowired
     private ShortUrlService shortUrlService;
@@ -21,7 +25,7 @@ class ShortShortUrlServiceTest {
 
     @Test
     void createUrl() {
-        ShortUrl shortUrl = shortUrlService.createUrl("http://localhost");
+        ShortUrl shortUrl = shortUrlService.createShortUrl("http://localhost");
 
         Optional<ShortUrl> maybeUrl = shortUrlRepository.findByCode(shortUrl.getCode());
         assertTrue(maybeUrl.isPresent());
@@ -30,4 +34,33 @@ class ShortShortUrlServiceTest {
         assertEquals(6, createdShortUrl.getCode().length());
     }
 
+    @Test
+    void getAllUrl() {
+        ShortUrl localhostUrl = shortUrlService.createShortUrl("http://localhost");
+        ShortUrl googleUrl = shortUrlService.createShortUrl("https://google");
+        ShortUrl amazonUrl = shortUrlService.createShortUrl("https://amazon");
+
+        List<ShortUrl> allUrls = shortUrlService.getAllUrls();
+
+        assertEquals(3, allUrls.size());
+        assertEquals(localhostUrl, allUrls.get(0));
+        assertEquals(googleUrl, allUrls.get(1));
+        assertEquals(amazonUrl, allUrls.get(2));
+    }
+
+    @Test
+    void deleteUrl() {
+        ShortUrl shortUrl = shortUrlService.createShortUrl("http://localhost");
+
+        assertEquals(1, shortUrlService.getAllUrls().size());
+
+        shortUrlService.deleteShortUrl(shortUrl.getLink());
+        assertEquals(0, shortUrlService.getAllUrls().size());
+    }
+
+    @Test
+    void deleteDoesNotFailIfUrlDoesNotExists() {
+        shortUrlService.deleteShortUrl("non existing link");
+        assertEquals(0, shortUrlService.getAllUrls().size());
+    }
 }

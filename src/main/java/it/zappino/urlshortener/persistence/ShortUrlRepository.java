@@ -8,4 +8,5 @@ import java.util.Optional;
 public interface ShortUrlRepository extends CrudRepository<ShortUrl, Long> {
 
     Optional<ShortUrl> findByCode(String code);
+    Optional<ShortUrl> findByLink(String link);
 }
