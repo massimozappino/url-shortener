@@ -1,10 +1,8 @@
 package it.zappino.urlshortener.controller;
 
-import it.zappino.urlshortener.persistence.entity.Url;
-import it.zappino.urlshortener.service.UrlService;
+import it.zappino.urlshortener.service.ShortUrlService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 //import org.springframework.web.servlet.NoHandlerFoundException;
 //
@@ -16,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class RedirectionController {
     @Autowired
-    UrlService urlService;
+    ShortUrlService shortUrlService;
 
 //
 //    @GetMapping(path = "/{code}")

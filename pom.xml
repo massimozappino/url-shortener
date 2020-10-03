@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>it.zappino</groupId>
-    <artifactId>url-shortener</artifactId>
+    <artifactId>shortUrl-shortener</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>url-shortener</name>
+    <name>shortUrl-shortener</name>
     <description>Url Shortener</description>
 
     <properties>

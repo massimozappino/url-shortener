@@ -1,7 +1,7 @@
 package it.zappino.urlshortener.controller;
 
-import it.zappino.urlshortener.persistence.entity.Url;
-import it.zappino.urlshortener.service.UrlService;
+import it.zappino.urlshortener.persistence.entity.ShortUrl;
+import it.zappino.urlshortener.service.ShortUrlService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,11 +13,11 @@ import org.springframework.validation.annotation.Validated;
 @RequestMapping("/api/url")
 public class UrlController {
     @Autowired
-    UrlService urlService;
+    ShortUrlService shortUrlService;
 
     @PostMapping
-    ResponseEntity<Url> createUrl(@Validated @RequestBody Url url) {
-        return ResponseEntity.ok().body(urlService.createUrl(url.getUrl()));
+    ResponseEntity<ShortUrl> createUrl(@Validated @RequestBody ShortUrl shortUrl) {
+        return ResponseEntity.ok().body(shortUrlService.createUrl(shortUrl.getLongUrl()));
     }
 
 }
