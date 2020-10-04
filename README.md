@@ -1,5 +1,4 @@
 [![Build Status](https://travis-ci.org/massimozappino/url-shortener.svg?branch=master)](https://travis-ci.org/massimozappino/url-shortener)
-[![Coverage Status](https://coveralls.io/repos/github/massimozappino/url-shortener/badge.svg)](https://coveralls.io/github/massimozappino/url-shortener)
 
 # Url Shortener
 
