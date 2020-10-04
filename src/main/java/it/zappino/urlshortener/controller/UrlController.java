@@ -1,5 +1,7 @@
 package it.zappino.urlshortener.controller;
 
+import it.zappino.urlshortener.controller.request.FullUrl;
+import it.zappino.urlshortener.controller.request.HashedLink;
 import it.zappino.urlshortener.persistence.entity.ShortUrl;
 import it.zappino.urlshortener.service.ShortUrlService;
 import lombok.extern.slf4j.Slf4j;
@@ -28,13 +30,13 @@ public class UrlController {
     }
 
     @PostMapping
-    ResponseEntity<ShortUrl> createUrl(@Valid @RequestBody ShortUrl shortUrl) {
-        return ResponseEntity.ok().body(shortUrlService.createShortUrl(shortUrl.getLongUrl()));
+    ResponseEntity<ShortUrl> createUrl(@Valid @RequestBody FullUrl requestUrl) {
+        return ResponseEntity.ok().body(shortUrlService.createShortUrl(requestUrl.getUrl()));
     }
 
     @DeleteMapping
-    ResponseEntity<Void> deleteUrl(@RequestBody ShortUrl shortUrl) {
-        shortUrlService.deleteShortUrl(shortUrl.getLink());
+    ResponseEntity<Void> deleteUrl(@RequestBody HashedLink hashedLink) {
+        shortUrlService.deleteShortUrl(hashedLink.getLink());
         return ResponseEntity.noContent().build();
     }
 
